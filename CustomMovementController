@@ -1,0 +1,76 @@
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local Player = game:GetService("Players").LocalPlayer
+
+local Speed = 50
+local JumpPower = 10
+local JumpTime = 0.1 --// in seconds how long jump velocity is applied
+
+local Event = nil
+
+local Inputs = {
+  ["Left"] = false;
+  ["Right"] = false;
+
+  ["Forward"] = false;
+  ["Backward"] = false;
+
+  ["Jumping"] = false;
+}
+
+local JumpQueue = false
+local CanJump = true;
+
+_G.Landed = Player.Character.Humanoid.StateChanged:Connect(function(_,new)
+    if new == Enum.HumanoidStateType.Landed then
+        CanJump = true;
+    end
+end)
+
+ _G.Event = RunService.RenderStepped:Connect(function()
+    local Char = Player.Character
+    if Char and Char.PrimaryPart then
+
+        local LookVector = Char.PrimaryPart.CFrame.LookVector * Speed
+        local JP = 0
+    
+        if (Inputs.Left == false and Inputs.Right == false and Inputs.Forward == false and Inputs.Backward == false) then
+            LookVector = Vector3.new(0, 0, 0)
+        end
+
+        if Inputs.Jumping and not JumpQueue and CanJump then
+            JumpQueue = true
+            CanJump = false
+            task.delay(JumpTime, function() JumpQueue = false end)
+        end
+
+        if JumpQueue then
+            JP = JumpPower
+        end
+
+        Char.PrimaryPart.Velocity = Vector3.new(LookVector.X, (JP == 0 and Char.PrimaryPart.Velocity.Y or JP), LookVector.Z)
+
+    end
+ end)
+
+_G.IB = UserInputService.InputBegan:Connect(function(Input, GameProcessed)
+    if GameProcessed then return end
+  
+    if Input.KeyCode == Enum.KeyCode.A then Inputs.Left = true end
+    if Input.KeyCode == Enum.KeyCode.D then Inputs.Right = true end
+    if Input.KeyCode == Enum.KeyCode.W then Inputs.Forward = true end
+    if Input.KeyCode == Enum.KeyCode.S then Inputs.Backward = true end
+
+    if Input.KeyCode == Enum.KeyCode.Space then Inputs.Jumping = true end
+end)
+
+_G.IE = UserInputService.InputEnded:Connect(function(Input, GameProcessed)
+    if GameProcessed then return end
+  
+    if Input.KeyCode == Enum.KeyCode.A then Inputs.Left = false end
+    if Input.KeyCode == Enum.KeyCode.D then Inputs.Right = false end
+    if Input.KeyCode == Enum.KeyCode.W then Inputs.Forward = false end
+    if Input.KeyCode == Enum.KeyCode.S then Inputs.Backward = false end
+
+    if Input.KeyCode == Enum.KeyCode.Space then Inputs.Jumping = false end
+end)
