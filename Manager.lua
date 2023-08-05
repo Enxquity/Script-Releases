@@ -1,7 +1,7 @@
 --// Credits to Stefanuk12 for this, i had to change 1 line since it was outdated!
 
 -- // Dependencies
-local Signals = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/ROBLOX/master/Games/PLS%20DONATE/Signals.lua"))()
+local Signals = loadstring(game:HttpGet("https://raw.githubusercontent.com/Enxquity/Script-Releases/main/Signals.lua"))()
 
 -- // Services
 local Players = game:GetService("Players")
